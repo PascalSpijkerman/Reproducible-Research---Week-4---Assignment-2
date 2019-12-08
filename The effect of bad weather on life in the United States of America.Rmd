@@ -1,0 +1,91 @@
+---
+title: "The effect of bad weather on the quality of life in the United Stated of America"
+author: "Pascal Spijkerman"
+date: "07/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ingroduction
+This report is written for the Data Science Course of Coursera in the coursetrack of Course 5, Reproducible Research.In this report, we explore the NOAA Storm Database and analyse the effect of extreme weather effects in the United States.
+
+The report answers 2 questions: 
+1. Across the United States, which types of events (as indicated in the \color{red}{\verb|EVTYPE|}EVTYPE variable) are most harmful with respect to population health?  
+
+2. Across the United States, which types of events have the greatest economic consequences?  
+
+## Data processing
+We first start importing necessary libraries and the Storm data. Then we identify variables in the storm data.   
+
+The data is downloaded from the Coursera project website.
+
+```{r, message = FALSE}
+library(knitr)
+library(ggplot2)
+library(dplyr)
+
+data <- read.csv("repdata_data_StormData.csv")
+```
+
+Then we take a look at the available variables in the dataset. 
+```{r}
+head(data)
+```
+
+Then we aggregate the data and have a glance at the results before actually visualise the results in nice tables. 
+
+```{r}
+fatalities <- aggregate(FATALITIES ~EVTYPE, data = data, sum, na.rm=TRUE)
+fatalities <- arrange(fatalities, desc(FATALITIES))
+fatalities<- fatalities[1:10,]
+fatalities
+
+injuries <- aggregate(INJURIES ~EVTYPE, data = data, sum, na.rm=TRUE)
+injuries <- arrange(injuries, desc(INJURIES))
+injuries <- injuries[1:10,]
+injuries
+```
+
+```{r}
+propdmg <- aggregate(PROPDMG~EVTYPE, data = data, sum, na.rm=TRUE)
+propdmg <- arrange(propdmg, desc(PROPDMG))
+propdmg <- propdmg[1:10,]
+propdmg
+
+cropdmg <- aggregate(CROPDMG~EVTYPE, data = data, sum, na.rm=TRUE)
+cropdmg <- arrange(cropdmg, desc(CROPDMG))
+cropdmg <- cropdmg[1:10,]
+cropdmg
+```
+
+## Results
+
+#1. Across the United States, which types of events (as indicated in the \color{red}{\verb|EVTYPE|}EVTYPE variable) are most harmful with respect to population health?  
+
+We analyse the effect on fatalities and injuries. Tables show Tornados are the most harmful for both fatalities and injuries. 
+
+```{r}
+par(mfrow = c(1, 2), mar = c(15, 8, 4, 4), mgp = c(3, 1, 0), cex = 0.7)
+
+barplot(fatalities$FATALITIES, names.arg = fatalities$EVTYPE, las = 3, main = "Weather events with highest number of fatalities", ylab = "number of fatalities", col = "lightblue")
+
+barplot(injuries$INJURIES, names.arg = injuries$EVTYPE, las = 3, main = "Weather events with highest number of injuries", ylab = "number of injuries", col = "lightblue")
+
+```
+
+#2. Across the United States, which types of events have the greatest economic consequences?  
+
+For this question, we focus on the variables PROPDMG (Propery Damage) and CROPDMG (Crop Damage). Results show Tornados has the highes property damage and Hails have the highest crop damage. 
+
+```{r}
+par(mfrow = c(1, 2), mar = c(15, 8, 4, 4), mgp = c(3, 1, 0), cex = 0.7)
+
+barplot(propdmg$PROPDMG, names.arg = propdmg$EVTYPE, las = 3, main = "Weather events and property damage", ylab = "Propert Damage in USD", col = "lightblue")
+
+barplot(cropdmg$CROPDMG, names.arg = cropdmg$EVTYPE, las = 3, main = "Weather events and crop damage", ylab = "Crop Damage in USD", col = "lightblue")
+```
+
+
